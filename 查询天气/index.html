@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>天气预报</title>
+	<style type="text/css">
+		*{
+			margin:0;
+			padding:0;
+			list-style:none;
+			border:none;
+			outline:none;
+			text-decoration: none;
+		}
+		#app{
+			width:680px;
+			margin:100px auto 0;
+			border:1px #333 solid;
+			padding:40px 0;
+		}
+		h3{
+			text-align:center;
+		}
+		.search{
+			width:300px;
+			margin:20px auto 10px;
+			overflow:hidden;
+			border: 1px #333 solid;
+		}
+		.search input{
+			width:240px;
+			height:24px;
+			float:left;
+			padding:0 20px;
+			box-sizing:border-box;
+		}
+		.search button{
+			width:60px;
+			height:24px;
+			float:left;
+		}
+		.city_box{
+			width:300px;
+			margin:0 auto;
+			overflow:hidden;
+		}
+		.city_box li{
+			float:left;
+			margin-right:10px;
+			cursor: pointer;
+		}
+
+		.weather_box{
+			width:100%;
+			margin:20px auto 0;
+			display:flex;
+			justify-content: space-around;
+			align-items:center; 
+		}
+		.weather_box li{
+			text-align:center;
+		}
+		.weather_box li div:nth-child(2){
+			margin:10px 0;
+			font-size: 12px;
+    		color: #FB0;
+		}
+		
+	</style>
+</head>
+<body>
+	<div id="app">
+		<h3>天知道</h3>
+		<div class="search">
+			<input type="text" v-model="city" v-on:keyup.enter="queryCityWeather">
+			<button v-on:click="queryCityWeather">查询</button>
+		</div>
+		<ul class="city_box">
+			<li
+				v-for="(item,i) in city_list"
+				v-bind:key="i"
+				@click="changeCity(item)"
+			>{{item}}</li>
+		</ul>
+		<ul class="weather_box">
+			<li
+				v-for="(item,i) in weather_list"
+				v-bind:key="i"
+			>
+				<div>{{item.type}}</div>
+				<div><span>{{item.low}}</span>~<span>{{item.high}}</span></div>
+				<div>{{item.date}}</div>
+			</li>
+		</ul>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.1.0/axios.min.js"></script>
+	<script type="text/javascript">
+		new Vue({
+			el:"#app",
+			data:{
+				city_list:["北京","上海","广州","深圳"],
+				weather_list:[],
+				city:"",
+			},
+			methods:{
+				queryCityWeather(){
+					axios.get("http://wthrcdn.etouch.cn/weather_mini?city="+this.city).then(
+						(res)=>{
+							console.log(res)
+							this.weather_list=res.data.forecast.slice(0,5);
+						}
+					)
+				},
+				changeCity(city){
+					this.city=city;
+					this.queryCityWeather()
+				}
+			},
+		})
+	</script>
+</body>
+</html>
